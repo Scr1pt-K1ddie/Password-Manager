@@ -67,6 +67,8 @@ int signup(char Username[SIZE], char Master_Password[SIZE]) {
     // closing the file
     fclose(fpointer);
 }
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "EmptyDeclOrStmt"
 char Identification(char Username[SIZE], char Master_Password[SIZE]) {
     char Verification[SIZE] = "Access Granted";
     char *p;// pointer for storing extracted newline from get_line
@@ -94,14 +96,14 @@ char Identification(char Username[SIZE], char Master_Password[SIZE]) {
                 }
                 if ((strcmp(get_line, Master_Password) == 0)) {
                     printf("Access granted");
+                    return 0;
                 }
             }
-            return '1';
         }
         // end of the loop body
     }
-    printf("\n\nAccess Denied.\n\nInvalid UserName/password or Vault does not exist\n\n");
     return '0';
     // closing the file
     fclose(fpointer);
 }
+#pragma clang diagnostic pop
