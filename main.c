@@ -34,7 +34,7 @@ int main() {
         case 2:
             system("cls");//for clearing the output screen
             separators();
-            printf("\n\n\tCreate the a new vault here\n\n");
+            printf("\n\n\tCreate a new vault here\n\n");
             separators();
             printf("\nEnter the Username: ");
             scanf("%s",&UserName);
