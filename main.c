@@ -28,7 +28,6 @@ int main() {
             printf("\nEnter the Password: ");
             scanf("%s",&Master_Password);
             Identification(UserName,Master_Password);
-
             break;
 
         case 2:
@@ -60,7 +59,7 @@ void separators() {
 }
 int signup(char Username[SIZE],char Master_Password[SIZE])
 {
-    FILE *fpointer = fopen("Vault2.txt","a+");
+    FILE *fpointer = fopen("Vault.txt","a+");
         // printing into the file
         fprintf(fpointer,"\n");
         fprintf(fpointer,"%s",Username);
@@ -72,10 +71,18 @@ int signup(char Username[SIZE],char Master_Password[SIZE])
 }
 char Identification(char Username[SIZE],char Master_Password[SIZE])
 {
-    char Verification[SIZE];
+    char Verification[SIZE]="Access Granted";
     char *p; // pointer for storing extracted newline from get_line
     char get_line[SIZE];
-    FILE *fpointer = fopen("Vault2.txt","r");
+
+    FILE *fpointer = fopen("Vault.txt","r");
+    // In case of empty file
+    if(fpointer==NULL)
+        {
+            printf("\nNo User found. Create a user first.\n\n");
+            return '2';
+        }
+    // loop start
     while(fgets(get_line,sizeof(get_line),fpointer))
         {
 
@@ -88,12 +95,13 @@ char Identification(char Username[SIZE],char Master_Password[SIZE])
         // comparing the username with the get_line, if get_line==Username then access granted
      if((strcmp(get_line,Username)==0))
         {
-            printf("User Recognized.");
-            break;
+             printf("\n\nAccess Granted.\n\n");
+             return '1';
         }
         // end of the loop body
         }
-
+        printf("\n\nAccess Denied.\n\nInvalid UserName/password or Vault does not exist\n\n");
+        return '0';
         // closing the file
         fclose(fpointer);
         }
