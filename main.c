@@ -79,7 +79,7 @@ char Identification(char Username[SIZE],char Master_Password[SIZE])
     // In case of empty file
     if(fpointer==NULL)
         {
-            printf("\nNo User found. Create a user first.\n\n");
+            printf("\nNo User found. Create a user first.");
             return '2';
         }
     // loop start
@@ -95,8 +95,18 @@ char Identification(char Username[SIZE],char Master_Password[SIZE])
         // comparing the username with the get_line, if get_line==Username then access granted
      if((strcmp(get_line,Username)==0))
         {
-             printf("\n\nAccess Granted.\n\n");
-             return '1';
+             while(fgets(get_line,sizeof(get_line),fpointer))
+                {
+                    if((p=strchr(get_line,'\n'))!=NULL)
+                        {
+                            *p='\0';
+                        }
+                    if((strcmp(get_line,Master_Password)==0))
+                        {
+                            printf("\nAccess Granted.\n");
+                            return '1';
+                        }
+                }
         }
         // end of the loop body
         }
