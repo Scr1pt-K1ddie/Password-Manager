@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#define SIZE 255
 
 void interface();
 void separators();
 
+int signup(char Username[SIZE],char Master_Password[SIZE]);
+char Identification(char Username[SIZE],char Master_Password[SIZE]);
+
 int main() {
     int choice;
+    char UserName[SIZE],Master_Password[SIZE];
 
     interface();
     printf("\n\nEnter your choice:  ");
@@ -17,10 +23,24 @@ int main() {
             separators();
             printf("\n\n\tYou can login to your vault here\n\n");
             separators();
+            printf("\nEnter the Username: ");
+            scanf("%s",&UserName);
+            printf("\nEnter the Password: ");
+            scanf("%s",&Master_Password);
+            Identification(UserName,Master_Password);
+
             break;
 
         case 2:
-            printf("Case 2");
+            system("cls");//for clearing the output screen
+            separators();
+            printf("\n\n\tCreate the a new vault here\n\n");
+            separators();
+            printf("\nEnter the Username: ");
+            scanf("%s",&UserName);
+            printf("\nEnter the Password: ");
+            scanf("%s",&Master_Password);
+            signup(UserName,Master_Password);
             break;
     }
 
@@ -38,3 +58,42 @@ void interface() {
 void separators() {
     printf("_______________________________________________________________");
 }
+int signup(char Username[SIZE],char Master_Password[SIZE])
+{
+    FILE *fpointer = fopen("Vault2.txt","a+");
+        // printing into the file
+        fprintf(fpointer,"\n");
+        fprintf(fpointer,"%s",Username);
+        fprintf(fpointer,"\n");
+        fprintf(fpointer,"%s",Master_Password);
+        // closing the file
+        fclose(fpointer);
+
+}
+char Identification(char Username[SIZE],char Master_Password[SIZE])
+{
+    char Verification[SIZE];
+    char *p; // pointer for storing extracted newline from get_line
+    char get_line[SIZE];
+    FILE *fpointer = fopen("Vault2.txt","r");
+    while(fgets(get_line,sizeof(get_line),fpointer))
+        {
+
+        // extracting the new line from get_line variable
+     if((p=strchr(get_line,'\n'))!=NULL)
+        {
+         *p='\0';
+        }
+
+        // comparing the username with the get_line, if get_line==Username then access granted
+     if((strcmp(get_line,Username)==0))
+        {
+            printf("User Recognized.");
+            break;
+        }
+        // end of the loop body
+        }
+
+        // closing the file
+        fclose(fpointer);
+        }
