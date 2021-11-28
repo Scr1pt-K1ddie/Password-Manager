@@ -170,6 +170,7 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE]){
     fprintf(fPtr, "%s", pass);
     fprintf(fPtr, "\n");
     fprintf(fPtr, "_");
+    // fprintf(fPtr, "\n");
     fclose(fPtr);
     system("cls");
     printf("\nRecord Added");
@@ -205,11 +206,10 @@ char view(void){
             if(check==2)
                 printf("\nThe password is:  %s", currentLine); */
         }
-
+        //printf("\n%d", check);
         if (check == 1) {
             printf("\n%s", currentLine);
         }
     }
-    check =0;
-    fclose(filePointer);
+    // check =0;
 }
