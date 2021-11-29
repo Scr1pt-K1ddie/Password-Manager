@@ -128,32 +128,48 @@ char inVault() {
 
     int newChoice;
     char web[SIZE],username[SIZE],pass[SIZE];
+    int MainChoice;
 
     system("cls");
     separators();
     printf("\n\n\t\tWelcome to your Vault\n\n");
     separators();
-    printf("\n1 to view saved credentials Or 2 for saving new credentials");
+    printf("\nChoose the item you want to Create/View\n");
+    printf("\n1 for Credentials\n2 for SecureNotes");
     printf("\n\nEnter your choice:  ");
-    scanf("%d", &newChoice);
+    scanf("%d",&MainChoice);
+    switch(MainChoice){
 
-    switch (newChoice) {
+    case 1:
+        printf("\n1 to view saved credentials Or 2 for saving new credentials");
+        printf("\n\nEnter your choice:  ");
+        scanf("%d", &newChoice);
 
-        case 1:
-            printf("Saved logins");
-            view();
-            break;
+        switch (newChoice) {
+
+            case 1:
+                printf("Saved logins");
+                view();
+                break;
+
+            case 2:
+
+                printf("\n\nEnter the Website Name: ");
+                scanf("%s", &web);
+                printf("\n\nEnter the UserName: ");
+                scanf("%s", &username);
+                printf("\n\nEnter the Password: ");
+                scanf("%s", &pass);
+
+                save(web,username,pass);
+
+                break;
+    } // newchoice switch closed
+
+    break; // mainchoice case 1 break
 
         case 2:
 
-            printf("\n\nEnter the name: ");
-            scanf("%s", &web);
-            printf("\n\nEnter the Name: ");
-            scanf("%s", &username);
-            printf("\n\nEnter the password: ");
-            scanf("%s", &pass);
-
-            save(web,username,pass);
 
             break;
     }
@@ -195,15 +211,7 @@ char view(void){
             if ((d = strchr(currentLine, '_')) != NULL) {
                 *d = '\0';
             }
-            /* check++;
-            if(check==0)
-                printf("\nThe website is:  %s", currentLine);
 
-            if(check==1)
-                printf("\nThe username is:  %s", currentLine);
-
-            if(check==2)
-                printf("\nThe password is:  %s", currentLine); */
         }
 
         if (check == 1) {
