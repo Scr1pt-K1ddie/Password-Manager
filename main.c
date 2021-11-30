@@ -127,7 +127,7 @@ char Identification(char Username[SIZE], char Master_Password[SIZE]) {
 char inVault() {
 
     int newChoice;
-    char web[SIZE],username[SIZE],pass[SIZE];
+    char web[SIZE], username[SIZE], pass[SIZE];
 
     system("cls");
     separators();
@@ -153,34 +153,33 @@ char inVault() {
             printf("\n\nEnter the password: ");
             scanf("%s", &pass);
 
-            save(web,username,pass);
+            save(web, username, pass);
 
             break;
     }
 }
 
-char save(char website[SIZE], char userName[SIZE], char pass[SIZE]){
+char save(char website[SIZE], char userName[SIZE], char pass[SIZE]) {
     FILE *fPtr;
     fPtr = fopen("Vault.txt", "a");
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", website);
+    fprintf(fPtr, "The name is:\t\t%s", website);
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", userName);
+    fprintf(fPtr, "The username is:\t%s", userName);
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", pass);
+    fprintf(fPtr, "The password is:\t%s", pass);
     fprintf(fPtr, "\n");
     fprintf(fPtr, "_");
-    // fprintf(fPtr, "\n");
     fclose(fPtr);
     system("cls");
     printf("\nRecord Added");
 }
 
-char view(void){
+char view(void) {
     char currentLine[SIZE];
     FILE *filePointer;
-    int check=0;
-    char *p,*d;
+    int check = 0, test = 0, temp = 0;
+    char *p, *d;
 
     filePointer = fopen("Vault.txt", "r");
 
@@ -196,20 +195,11 @@ char view(void){
             if ((d = strchr(currentLine, '_')) != NULL) {
                 *d = '\0';
             }
-            /* check++;
-            if(check==0)
-                printf("\nThe website is:  %s", currentLine);
-
-            if(check==1)
-                printf("\nThe username is:  %s", currentLine);
-
-            if(check==2)
-                printf("\nThe password is:  %s", currentLine); */
         }
-        //printf("\n%d", check);
         if (check == 1) {
             printf("\n%s", currentLine);
         }
     }
-    // check =0;
+    check = 0;
+    fclose(filePointer);
 }
