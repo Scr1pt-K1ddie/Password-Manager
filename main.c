@@ -126,34 +126,67 @@ char Identification(char Username[SIZE], char Master_Password[SIZE]) {
 
 char inVault() {
 
-    int newChoice;
+    int newChoice, mainChoice, test;
     char web[SIZE], username[SIZE], pass[SIZE];
 
     system("cls");
     separators();
     printf("\n\n\t\tWelcome to your Vault\n\n");
     separators();
+    printf("\nChoose the item you want to Create/View\n");
+
+    do {
+        printf("\n 1 for Credentials\n 2 for SecureNotes");
+        printf("\n\nEnter your choice:  ");
+        scanf("%d", &mainChoice);
+    } while (mainChoice != 1 && mainChoice != 2);
+
     printf("\n1 to view saved credentials Or 2 for saving new credentials");
     printf("\n\nEnter your choice:  ");
     scanf("%d", &newChoice);
+    if (newChoice == -1) {
+        inVault();
+        return 0;
+    }
 
-    switch (newChoice) {
+    switch (mainChoice) {
 
         case 1:
-            printf("Saved logins");
-            view();
-            break;
+            switch (newChoice) {
+
+                case 1:
+                    printf("Saved logins");
+                    view();
+                    printf("\nEnter 0 to go back to main menu:\t");
+                    scanf("%d", &test);
+                    if (test == 0) {
+                        inVault();
+                    }
+                    break;
+
+                case 2:
+
+                    printf("\n\nEnter the Website Name: ");
+                    scanf("%s", &web);
+                    printf("\n\nEnter the UserName: ");
+                    scanf("%s", &username);
+                    printf("\n\nEnter the Password: ");
+                    scanf("%s", &pass);
+                    save(web, username, pass);
+
+                    printf("\nEnter 0 to go back to main menu:\t");
+                    scanf("%d", &test);
+                    if (test == 0) {
+                        inVault();
+                    }
+
+                    break;
+            }// newchoice switch closed
+
+            break;// mainchoice case 1 break
 
         case 2:
 
-            printf("\n\nEnter the name: ");
-            scanf("%s", &web);
-            printf("\n\nEnter the Name: ");
-            scanf("%s", &username);
-            printf("\n\nEnter the password: ");
-            scanf("%s", &pass);
-
-            save(web, username, pass);
 
             break;
     }
@@ -178,7 +211,7 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE]) {
 char view(void) {
     char currentLine[SIZE];
     FILE *filePointer;
-    int check = 0, test = 0, temp = 0;
+    int check = 0;
     char *p, *d;
 
     filePointer = fopen("Vault.txt", "r");
