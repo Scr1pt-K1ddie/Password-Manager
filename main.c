@@ -1,23 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <conio.h>
 #define SIZE 255
 
 void interface();
 void separators();
 
-int signup(char Username[SIZE], char Master_Password[SIZE]);
-char Identification(char Username[SIZE], char Master_Password[SIZE]);
+int signup( char Master_Password[SIZE]);
+char Identification(char Master_Password[SIZE]);
 
 char inVault();
 char save();
 char view();
 
 int status = 0;
+char UserName[SIZE];
 
 int main() {
     int choice;
-    char UserName[SIZE], Master_Password[SIZE];
+    char Master_Password[SIZE];
 
     interface();
     printf("\n\nEnter your choice:  ");
@@ -33,7 +35,7 @@ int main() {
             scanf("%s", &UserName);
             printf("\nEnter the Password: ");
             scanf("%s", &Master_Password);
-            Identification(UserName, Master_Password);
+            Identification(Master_Password);
 
             if (status == 0) inVault();
             else if (status == 1)
@@ -52,7 +54,7 @@ int main() {
             scanf("%s", &UserName);
             printf("\nEnter the Password: ");
             scanf("%s", &Master_Password);
-            signup(UserName, Master_Password);
+            signup(Master_Password);
             break;
     }
 
@@ -70,11 +72,15 @@ void interface() {
 void separators() {
     printf("_______________________________________________________________");
 }
-int signup(char Username[SIZE], char Master_Password[SIZE]) {
-    FILE *fpointer = fopen("Vault.txt", "a+");
+int signup(char Master_Password[SIZE]) {
+
+    char *extension=".txt";
+    char fileName[strlen(UserName)+strlen(extension)+1];
+    snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
+    FILE *fpointer = fopen(fileName, "a+");
     // printing into the file
     fprintf(fpointer, "\n");
-    fprintf(fpointer, "%s", Username);
+    fprintf(fpointer, "%s", UserName);
     fprintf(fpointer, "\n");
     fprintf(fpointer, "%s", Master_Password);
     fprintf(fpointer, "\n");
@@ -83,19 +89,28 @@ int signup(char Username[SIZE], char Master_Password[SIZE]) {
     fclose(fpointer);
 }
 
-char Identification(char Username[SIZE], char Master_Password[SIZE]) {
+char Identification(char Master_Password[SIZE]) {
+
+
     char Verification[SIZE] = "Access Granted";
     char *p;// pointer for storing extracted newline from get_line
     char get_line[SIZE];
 
-    FILE *fpointer = fopen("Vault.txt", "r");
-    // In case of empty file
-    if (fpointer == NULL) {
+    char *extension=".txt";
+    char fileName[strlen(UserName)+strlen(extension)];
+    snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
+
+    FILE *fpointer = fopen(fileName, "r");
+    // In case of no file
+    if (fpointer == NULL)
+        {
         printf("\nNo User found. Create a user first.\n\n");
+        status=3;
         return '2';
-    }
+        }
+
     // loop start
-    while (fgets(get_line, sizeof(get_line), fpointer)) {
+  while (fgets(get_line, sizeof(get_line), fpointer)) {
 
         // extracting the new line from get_line variable
         if ((p = strchr(get_line, '\n')) != NULL) {
@@ -103,16 +118,17 @@ char Identification(char Username[SIZE], char Master_Password[SIZE]) {
         }
 
         // comparing the username with the get_line, if the get_line==Username then access granted
-        if ((strcmp(get_line, Username) == 0)) {
+        if ((strcmp(get_line, UserName) == 0)) {
+
             while (fgets(get_line, sizeof(get_line), fpointer)) {
                 if ((p = strchr(get_line, '\n')) != NULL) {
                     *p = '\0';
                 }
                 if ((strcmp(get_line, Master_Password) == 0)) {
-                    return 0;
+                    return '0';
                 } else if ((strcmp(get_line, Master_Password) != 0)) {
                     status = 1;
-                    return 0;
+                    return '0';
                 }
             }
         }
@@ -126,47 +142,64 @@ char Identification(char Username[SIZE], char Master_Password[SIZE]) {
 
 char inVault() {
 
-    int newChoice;
-    char web[SIZE],username[SIZE],pass[SIZE];
-    int MainChoice;
+    int  mainChoice, test, newChoice;
+    char web[SIZE], username[SIZE], pass[SIZE];
 
     system("cls");
     separators();
     printf("\n\n\t\tWelcome to your Vault\n\n");
     separators();
     printf("\nChoose the item you want to Create/View\n");
-    printf("\n1 for Credentials\n2 for SecureNotes");
-    printf("\n\nEnter your choice:  ");
-    scanf("%d",&MainChoice);
-    switch(MainChoice){
 
-    case 1:
-        printf("\n1 to view saved credentials Or 2 for saving new credentials");
+    do {
+        printf("\n 1 for Credentials\n 2 for SecureNotes");
         printf("\n\nEnter your choice:  ");
-        scanf("%d", &newChoice);
+        scanf("%d", &mainChoice);
+    } while (mainChoice != 1 && mainChoice != 2);
+    system("cls");
+    printf("\n1 to view saved credentials\n2 for saving new credentials");
+    printf("\nTo go back: press -1");
+    printf("\n\nEnter your choice:  ");
+    scanf("%d",&newChoice);
+    if (newChoice == -1 ) {
+        inVault();
+        return 0;
+    }
 
-        switch (newChoice) {
+    switch (mainChoice) {
 
-            case 1:
-                printf("Saved logins");
-                view();
-                break;
+        case 1:
+            switch (newChoice) {
 
-            case 2:
+                case 1:
+                    printf("Saved logins");
+                    view();
+                    printf("\nEnter 0 to go back to main menu:\t");
+                    scanf("%d", &test);
+                    if (test == 0) {
+                        inVault();
+                    }
+                    break;
 
-                printf("\n\nEnter the Website Name: ");
-                scanf("%s", &web);
-                printf("\n\nEnter the UserName: ");
-                scanf("%s", &username);
-                printf("\n\nEnter the Password: ");
-                scanf("%s", &pass);
+                case 2:
+                    printf("\n\nEnter the Website Name: ");
+                    scanf("%s", &web);
+                    printf("\n\nEnter the UserName: ");
+                    scanf("%s", &username);
+                    printf("\n\nEnter the Password: ");
+                    scanf("%s", &pass);
+                    save(web, username, pass);
 
-                save(web,username,pass);
+                    printf("\nEnter 0 to go back to main menu:\t");
+                    scanf("%d", &test);
+                    if (test == 0) {
+                        inVault();
+                    }
 
-                break;
-    } // newchoice switch closed
+                    break;
+            }// newchoice switch closed
 
-    break; // mainchoice case 1 break
+            break;// mainchoice case 1 break
 
         case 2:
 
@@ -175,15 +208,28 @@ char inVault() {
     }
 }
 
-char save(char website[SIZE], char userName[SIZE], char pass[SIZE]){
+char save(char website[SIZE], char userName[SIZE], char pass[SIZE]) {
+    // variable name file declaration
+    char *extension = ".txt";
+    char fileName[strlen(UserName)+strlen(extension)+1]; // added 1 for the '/0' character
+    snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension); // here taking UserName and extension strings ( concatenating them ) and then storing into fileName.
+
     FILE *fPtr;
-    fPtr = fopen("Vault.txt", "a");
+    fPtr = fopen(fileName, "a");
+
+    if (fPtr == NULL)
+        {
+        printf("\nNo User found. Create a user first.\n\n");
+        printf("\n%s",fileName);
+        return 'B';
+        }
+
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", website);
+    fprintf(fPtr, "The name is:\t\t%s", website);
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", userName);
+    fprintf(fPtr, "The username is:\t%s", userName);
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "%s", pass);
+    fprintf(fPtr, "The password is:\t%s", pass);
     fprintf(fPtr, "\n");
     fprintf(fPtr, "_");
     fclose(fPtr);
@@ -191,13 +237,19 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE]){
     printf("\nRecord Added");
 }
 
-char view(void){
+char view(void) {
     char currentLine[SIZE];
     FILE *filePointer;
-    int check=0;
-    char *p,*d;
+    int check = 0;
+    char *p, *d;
 
-    filePointer = fopen("Vault.txt", "r");
+    char *extension=".txt";
+    char fileName[strlen(UserName)+strlen(extension)];
+    snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
+
+
+
+    filePointer = fopen(fileName, "r");
 
 
     while (fgets(currentLine, sizeof(currentLine), filePointer)) {
@@ -211,13 +263,11 @@ char view(void){
             if ((d = strchr(currentLine, '_')) != NULL) {
                 *d = '\0';
             }
-
         }
-
         if (check == 1) {
             printf("\n%s", currentLine);
         }
     }
-    check =0;
+    check = 0;
     fclose(filePointer);
 }
