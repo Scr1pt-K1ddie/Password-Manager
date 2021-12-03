@@ -73,10 +73,11 @@ void separators() {
     printf("_______________________________________________________________");
 }
 int signup(char Master_Password[SIZE]) {
-
+// variable filename declaration
     char *extension=".txt";
-    char fileName[strlen(UserName)+strlen(extension)+1];
+    char fileName[strlen(UserName)+strlen(extension)+1]; // +1 for '/0' character, only necessary while writing/appending.
     snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
+
     FILE *fpointer = fopen(fileName, "a+");
     // printing into the file
     fprintf(fpointer, "\n");
@@ -105,7 +106,7 @@ char Identification(char Master_Password[SIZE]) {
     if (fpointer == NULL)
         {
         printf("\nNo User found. Create a user first.\n\n");
-        status=3;
+        status=3; // assigning 3 to 'status' so when the control goes back to main function, The program does not open Vault.
         return '2';
         }
 
