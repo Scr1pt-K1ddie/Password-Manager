@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
+#include <time.h>
 #define SIZE 255
 
 void interface();
@@ -19,8 +19,9 @@ char UserName[SIZE];
 
 int main() {
     int choice;
-    char Master_Password[SIZE];
-
+    char Master_Password[SIZE],Re_Master_Password[SIZE];
+    int Dots=0; // for Dots
+    system("cls");
     interface();
     printf("\n\nEnter your choice:  ");
     scanf("%d", &choice);
@@ -52,9 +53,28 @@ int main() {
             separators();
             printf("\nEnter the Username: ");
             scanf("%s", &UserName);
-            printf("\nEnter the Password: ");
+            do{
+
+            printf("\nEnter the new Password: ");
             scanf("%s", &Master_Password);
+            printf("\nRe-Enter the new Password: ");
+            scanf("%s", &Re_Master_Password);
+            if(strcmp(Master_Password,Re_Master_Password)!=0)
+                {
+                    printf("\nRe-Entered password could not match, Please Enter Again.\n");
+                }
+            }while(strcmp(Master_Password,Re_Master_Password)!=0);
+            printf("\nUser Created Successfully. You may logIn to your Vault Now.\n");
+            printf("\nRe-directing to the Main-menu.\n");
+            while(Dots!=4 )
+                {
+                    Sleep(1000);
+                    Dots+=1;
+                    printf(".");
+                }
             signup(Master_Password);
+
+            main();
             break;
     }
 
@@ -245,15 +265,20 @@ char view(void) {
     char *p, *d;
 
     char *extension=".txt";
-    char fileName[strlen(UserName)+strlen(extension)];
+    char fileName[strlen(UserName)+strlen(extension)+1];
     snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
 
+    if(filePointer==NULL)
+        {
+            printf("\nError");
 
+        }
 
     filePointer = fopen(fileName, "r");
 
 
     while (fgets(currentLine, sizeof(currentLine), filePointer)) {
+
 
         if ((p = strchr(currentLine, '\n')) != NULL) {
             *p = '\0';
