@@ -13,13 +13,16 @@ char Identification(char Master_Password[SIZE]);
 char inVault();
 char save();
 char view();
+char AlreadyExistsUser();
 
 int status = 0;
 char UserName[SIZE];
 
 int main() {
-    int choice;
-    char Master_Password[SIZE],Re_Master_Password[SIZE];
+
+
+    int choice,ch,n=0,i=0,password_choice=0;
+    char Master_Password[SIZE];
     int Dots=0; // for Dots
     system("cls");
     interface();
@@ -53,19 +56,64 @@ int main() {
             separators();
             printf("\nEnter the Username: ");
             scanf("%s", &UserName);
+            // do starts
+            printf("Press 1 if you want to Hide the password\nPress 2 if you want to display the password\n");
+            scanf("%d",&password_choice);
+
             do{
+
+                if(password_choice==1)
+                    {
+                        // for Master Password
+                        i=0;
+                     printf("Please Enter your Master Password: ");
+                     while((ch=getch())!= 13)
+                     {
+                         if(ch == 8)
+                            {
+                              Master_Password[i]='\b';
+                              putch('\b');
+                              printf(" ");
+                              putch('\b');
+                            }
+                          if(ch!= 8)
+                            {
+                              Master_Password[i]=ch;
+                              putch('*');
+                            }
+                          i++;
+                     }
+                     Master_Password[i]='\0';
+
+                      // to show the password
+                    printf("\n\nDo you want to show the Master password now: 1 for yes/2 for no? ");
+                    printf("Your reply: ");
+                    scanf("%d",&n);
+                    if(n==1)
+                        {
+                           printf("\n%s",Master_Password);
+                        }
+                    }
+
+            if(password_choice==2)
+            {
 
             printf("\nEnter the new Password: ");
             scanf("%s", &Master_Password);
-            printf("\nRe-Enter the new Password: ");
-            scanf("%s", &Re_Master_Password);
-            if(strcmp(Master_Password,Re_Master_Password)!=0)
+            }
+            if(strlen(Master_Password)<8)
                 {
-                    printf("\nRe-Entered password could not match, Please Enter Again.\n");
+                    printf("\n\nPlease Enter another password, minimum length of password is 7\n\n");
                 }
-            }while(strcmp(Master_Password,Re_Master_Password)!=0);
+
+            }while((strlen(Master_Password)-1)<8);
+            // do ends
+
+            AlreadyExistsUser();
+
             printf("\nUser Created Successfully. You may logIn to your Vault Now.\n");
             printf("\nRe-directing to the Main-menu.\n");
+            // loading
             while(Dots!=4 )
                 {
                     Sleep(1000);
@@ -138,6 +186,8 @@ char Identification(char Master_Password[SIZE]) {
             *p = '\0';
         }
 
+        //In case of existing user
+
         // comparing the username with the get_line, if the get_line==Username then access granted
         if ((strcmp(get_line, UserName) == 0)) {
 
@@ -165,19 +215,34 @@ char inVault() {
 
     int  mainChoice, test, newChoice;
     char web[SIZE], username[SIZE], pass[SIZE];
+    int log_out=0;
 
     system("cls");
     separators();
+
+    // In Vault prompts
     printf("\n\n\t\tWelcome to your Vault\n\n");
     separators();
     printf("\nChoose the item you want to Create/View\n");
 
     do {
-        printf("\n 1 for Credentials\n 2 for SecureNotes");
+        printf("\n 1 for Credentials\n 2 for SecureNotes\n -1 to log out of the vault.");
         printf("\n\nEnter your choice:  ");
         scanf("%d", &mainChoice);
-    } while (mainChoice != 1 && mainChoice != 2);
+    } while (mainChoice != 1 && mainChoice != 2 && mainChoice!=-1);
+    if (mainChoice== -1)
+        {
+            printf("\nLogging Out");
+            while(log_out<2)
+                {
+                    Sleep(800);
+                    printf(".");
+                    log_out+=1;
+                }
+            main();
+        }
     system("cls");
+    // prompts for credentials
     printf("\n1 to view saved credentials\n2 for saving new credentials");
     printf("\nTo go back: press -1");
     printf("\n\nEnter your choice:  ");
@@ -246,9 +311,9 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE]) {
         }
 
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "The name is:\t\t%s", website);
+    fprintf(fPtr, "The Website name is:\t%s", website);
     fprintf(fPtr, "\n");
-    fprintf(fPtr, "The username is:\t%s", userName);
+    fprintf(fPtr, "The UserName is:\t%s", userName);
     fprintf(fPtr, "\n");
     fprintf(fPtr, "The password is:\t%s", pass);
     fprintf(fPtr, "\n");
@@ -265,20 +330,16 @@ char view(void) {
     char *p, *d;
 
     char *extension=".txt";
-    char fileName[strlen(UserName)+strlen(extension)+1];
+    char fileName[strlen(UserName)+strlen(extension)];
     snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
 
-    if(filePointer==NULL)
-        {
-            printf("\nError");
 
-        }
 
     filePointer = fopen(fileName, "r");
 
 
-    while (fgets(currentLine, sizeof(currentLine), filePointer)) {
 
+    while (fgets(currentLine, sizeof(currentLine), filePointer)) {
 
         if ((p = strchr(currentLine, '\n')) != NULL) {
             *p = '\0';
@@ -290,10 +351,62 @@ char view(void) {
                 *d = '\0';
             }
         }
+
         if (check == 1) {
             printf("\n%s", currentLine);
         }
+
+
     }
     check = 0;
     fclose(filePointer);
+}
+
+char AlreadyExistsUser() {
+
+
+    int Dots=0;
+    char *p;// pointer for storing extracted newline from get_line
+    char get_line[SIZE];
+
+    char *extension=".txt";
+    char fileName[strlen(UserName)+strlen(extension)];
+    snprintf(fileName,sizeof(fileName),"%s%s",UserName,extension);
+
+    FILE *fpointer = fopen(fileName, "r");
+
+    if(fpointer==NULL)
+        {
+            return 'C';
+        }
+
+    // loop start
+  while (fgets(get_line, sizeof(get_line), fpointer)) {
+
+        // extracting the new line from get_line variable
+        if ((p = strchr(get_line, '\n')) != NULL) {
+            *p = '\0';
+        }
+
+        if ((strcmp(get_line, UserName) == 0))
+            {
+                printf("\nError\nUser Already Exists.\nPlease try again to create a new Vault");
+                printf("\nRe-directing you to the Main-menu.\n");
+            // loading
+            while(Dots!=4 )
+                {
+                    Sleep(1000);
+                    Dots+=1;
+                    printf(".");
+                }
+
+                main();
+            }
+        //In case of existing user
+
+
+    }
+    // closing the file
+    fclose(fpointer);
+    return '0';
 }
