@@ -21,7 +21,7 @@ char UserName[SIZE];
 int main() {
 
 
-    int choice,ch,n=0,i=0,password_choice=0;
+    int choice,ch,n=0,i=0; // May use i and n later, ch is for storing character from getch() function
     char Master_Password[SIZE];
     int Dots=0; // for Dots
     system("cls");
@@ -57,56 +57,18 @@ int main() {
             printf("\nEnter the Username: ");
             scanf("%s", &UserName);
             // do starts
-            printf("Press 1 if you want to Hide the password\nPress 2 if you want to display the password\n");
-            scanf("%d",&password_choice);
-
             do{
-
-                if(password_choice==1)
-                    {
-                        // for Master Password
-                        i=0;
-                     printf("Please Enter your Master Password: ");
-                     while((ch=getch())!= 13)
-                     {
-                         if(ch == 8)
-                            {
-                              Master_Password[i]='\b';
-                              putch('\b');
-                              printf(" ");
-                              putch('\b');
-                            }
-                          if(ch!= 8)
-                            {
-                              Master_Password[i]=ch;
-                              putch('*');
-                            }
-                          i++;
-                     }
-                     Master_Password[i]='\0';
-
-                      // to show the password
-                    printf("\n\nDo you want to show the Master password now: 1 for yes/2 for no? ");
-                    printf("Your reply: ");
-                    scanf("%d",&n);
-                    if(n==1)
-                        {
-                           printf("\n%s",Master_Password);
-                        }
-                    }
-
-            if(password_choice==2)
-            {
 
             printf("\nEnter the new Password: ");
             scanf("%s", &Master_Password);
-            }
+
+
             if(strlen(Master_Password)<8)
                 {
                     printf("\n\nPlease Enter another password, minimum length of password is 7\n\n");
                 }
 
-            }while((strlen(Master_Password)-1)<8);
+            }while((strlen(Master_Password))<8);
             // do ends
 
             AlreadyExistsUser();
