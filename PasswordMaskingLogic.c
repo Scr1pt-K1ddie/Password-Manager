@@ -1,9 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
+#include <string.h>
 
 int main()
 {
+    char backspace_char;
+    char check[256];
     char password[256];
     int ch,i=0,n=0; // ch is to store the character , i is iterator (acts as index number too), n is for sub-menu inside the case 1 of main-menu.
     int choice=0; // for the main menu
@@ -16,7 +19,7 @@ int main()
     while((ch=getch())!= 13){
     if(ch == 8)
     {
-      password[i]='\b';
+      i--;
       putch('\b');
       printf(" ");
       putch('\b');
@@ -25,8 +28,9 @@ int main()
     {
       password[i]=ch;
       putch('*');
+      i++;
     }
-    i++;
+
     }
 
     password[i]='\0';
@@ -36,10 +40,20 @@ int main()
     if(n==1)
         {
            printf("\n%s",password);
+
         }
     }
     if(choice==2){
     scanf("%s",password);
     }
+
+    // for comparing.
+    printf("\n%d",strlen(password));
+    printf("String to compare: ");
+    scanf("%s",check);
+    if((strcmp(password,check))==0)
+        {
+            printf("\nok");
+        }
     return 0;
 }
