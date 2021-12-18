@@ -30,6 +30,8 @@ int main()
     char Master_Password[SIZE], Re_Master_Password[SIZE];
     char questionn[SIZE];
 
+    status = 0;
+
     system("cls");
     interface();
     printf("\n\nEnter your choice:  ");
