@@ -3,16 +3,20 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <conio.h>
 
 #define SIZE 255
 
 void interface();
 void separators();
+void signUpScreen();
+int checkVaultStatus();
 
-int signup();
 int resetPassword();
 int forgotPassword();
 int question();
+int signup();
+int checkAttempts();
 
 char Identification(char Master_Password[SIZE]);
 char inVault();
@@ -26,11 +30,13 @@ char UserName[SIZE];
 int main()
 {
 
-    int choice, test, check = 0, ch, n = 0, i = 0, password_choice = 0, q = 0, Dots = 0, passChoice = 0, select = 0;
-    char Master_Password[SIZE], Re_Master_Password[SIZE];
+    int choice, test, check = 0, ch, n = 0, i = 0, password_choice = 0, q = 0, Dots = 0, passChoice = 0, select = 0, k, userAttempts;
+    char Master_Password[SIZE];
     char questionn[SIZE];
+    int temp = 0;
 
     status = 0;
+    userAttempts = 0;
 
     system("cls");
     interface();
@@ -46,6 +52,20 @@ int main()
         separators();
         printf("\n\nEnter the Username: ");
         scanf("%s", &UserName);
+
+        // here, we have to check if the user's vault is disabled or not
+        temp = checkVaultStatus();
+
+        if (temp == 10)
+        {
+            system("cls"); //for clearing the output screen
+            separators();
+            printf("\n\n\tYou can login to your vault here\n\n");
+            separators();
+            printf("\n\nEnter the Username: ");
+            scanf("%s", &UserName);
+        }
+
         // masking password logic here too
         do
         {
@@ -89,8 +109,7 @@ int main()
             {
                 printf("\n%s", Master_Password);
             }
-
-        } // end of the case
+        }
 
         if (password_choice == 2)
         {
@@ -104,16 +123,19 @@ int main()
             Dots += 1;
             printf(".");
         }
+
         Identification(Master_Password);
 
         if (status == 0)
             inVault();
+
         else if (status == 1)
         {
             do
             {
                 printf("\nWrong Password");
-                printf("\nEnter 1 to go back to main menu or enter 2 to reset password");
+
+                printf("\nEnter 1 to go back to main menu OR enter 2 to reset password OR press 3 to enter password again:\t");
                 scanf("%d", &passChoice);
 
                 if (passChoice == 2)
@@ -124,6 +146,42 @@ int main()
                 else if (passChoice == 1)
                 {
                     main();
+                }
+
+                else if (passChoice == 3)
+                {
+                    do
+                    {
+                        printf("\nWrong Password");
+                        printf("\nEnter the Password again: ");
+                        scanf("%s", &Master_Password);
+
+                        Identification(Master_Password);
+
+                        if (status == 0)
+                        {
+                            inVault();
+                            exit(0);
+                        }
+
+                        printf("\nWrong Password");
+                        userAttempts++;
+                        checkAttempts(userAttempts);
+
+                        printf("\nEnter 1 to go back to main menu OR enter 2 to reset password OR press 3 to enter password again:\t");
+                        scanf("%d", &passChoice);
+
+                        if (passChoice == 2)
+                        {
+                            forgotPassword();
+                        }
+
+                        else if (passChoice == 1)
+                        {
+                            main();
+                        }
+
+                    } while (status == 1 && passChoice == 3);
                 }
 
                 else
@@ -153,7 +211,7 @@ int main()
             while (select != 0 && select != 1 && select != 2)
             {
                 printf("\nError! Invalid Choice. Choose Again.");
-                printf("\n    Enter 0 to try again\n    Enter 1 to to create a new user\n    Enter 2 to exit program.");
+                printf("\n    Enter 0 to try to login again\n    Enter 1 to create a new user\n    Enter 2 to exit program.");
                 scanf("%d", &select);
             }
 
@@ -164,7 +222,7 @@ int main()
                 break;
 
             case 1:
-
+                signUpScreen();
                 break;
 
             case 2:
@@ -181,154 +239,8 @@ int main()
         break;
 
     case 2:
-        i = 0; // clearing i
 
-        system("cls"); //for clearing the output screen
-        separators();
-        printf("\n\n\tCreate a new vault here\n\n");
-        separators();
-        printf("\nEnter the Username: ");
-        scanf("%s", &UserName);
-        // do starts
-        printf("Press 1 if you want to Hide the password\nPress 2 if you want to display the password\n");
-        scanf("%d", &password_choice);
-
-        do
-        {
-
-            if (password_choice == 1)
-            {
-                // for Master Password
-                i = 0;
-                printf("Please Enter your Master Password: ");
-                while ((ch = getch()) != 13)
-                {
-                    if (ch == 8)
-                    {
-                        i--;
-                        putch('\b');
-                        printf(" ");
-                        putch('\b');
-                    }
-                    if (ch != 8)
-                    {
-                        Master_Password[i] = ch;
-                        putch('*');
-                        i++;
-                    }
-                }
-                Master_Password[i] = '\0';
-
-                // to show the password
-                printf("\n\nDo you want to show the Master password now: 1 for yes/2 for no? ");
-                printf("Your reply: ");
-                scanf("%d", &n);
-                if (n == 1)
-                {
-                    printf("\n%s", Master_Password);
-                }
-
-                // for re-enter master_password
-                i = 0;
-                printf("\nRe-Enter the Master Password: ");
-                while ((ch = getch()) != 13)
-                {
-                    if (ch == 8)
-                    {
-                        i--;
-                        putch('\b');
-                        printf(" ");
-                        putch('\b');
-                    }
-                    if (ch != 8)
-                    {
-                        Re_Master_Password[i] = ch;
-                        putch('*');
-                        i++;
-                    }
-                }
-                Re_Master_Password[i] = '\0';
-
-                // to show the password
-                printf("\n\nDo you want to show the Re-Entered Master password now: 1 for yes/2 for no? ");
-                printf("Your reply: ");
-                scanf("%d", &n);
-                if (n == 1)
-                {
-                    printf("\n%s", Re_Master_Password);
-                }
-                // end of the case
-            }
-
-            if (password_choice == 2)
-            {
-
-                printf("\nEnter the new Password: ");
-                scanf("%s", &Master_Password);
-                printf("\nRe-Enter the new Password: ");
-                scanf("%s", &Re_Master_Password);
-            }
-            if (strcmp(Master_Password, Re_Master_Password) != 0)
-            {
-                printf("\n\nRe-Entered password could not match, Please Enter Again.\n");
-            }
-        } while (strcmp(Master_Password, Re_Master_Password) != 0 && strlen(Master_Password) < 8);
-        // do ends
-
-        AlreadyExistsUser();
-
-        if (AlreadyExistsUser() == '0')
-        {
-            main();
-        }
-
-        test = question();
-
-        switch (test)
-        {
-        case 1:
-            printf("The question you chose is:\nWhat was the name of your first school?");
-            printf("\nEnter the answer of the question:\t");
-            scanf("%s", questionn);
-            q = 1;
-            break;
-
-        case 2:
-            printf("The question you chose is:\nIn which city were you born?");
-            printf("\nEnter the answer of the question:\t");
-            scanf("%s", questionn);
-            q = 2;
-            break;
-
-        case 3:
-            printf("The question you chose is:\nWhat was your childhood nickname?");
-            printf("\nEnter the answer of the question:\t");
-            scanf("%s", questionn);
-            q = 3;
-            break;
-
-        case 4:
-            printf("The question you chose is:\nWhat was the name of the first college you attended?");
-            printf("\nEnter the answer of the question:\t");
-            scanf("%s", questionn);
-            q = 4;
-            break;
-        }
-
-        // _________________________________________________________________
-
-        printf("\nUser Created Successfully. You may logIn to your Vault Now.\n");
-        printf("\nRe-directing to the Main-menu.\n");
-        // loading
-        Dots = 0;
-        while (Dots != 4)
-        {
-            Sleep(1000);
-            Dots += 1;
-            printf(".");
-        }
-        signup(Master_Password, questionn, q);
-
+        signUpScreen();
         main();
         break;
     }
@@ -348,6 +260,7 @@ void separators()
 {
     printf("_______________________________________________________________");
 }
+
 int signup(char Master_Password[SIZE], char Question[SIZE], int q)
 {
     // variable filename declaration
@@ -386,8 +299,7 @@ int signup(char Master_Password[SIZE], char Question[SIZE], int q)
     fprintf(fpointer, "%s", Question);
     fprintf(fpointer, "\n");
     fprintf(fpointer, "_");
-    // closing the file
-    fclose(fpointer);
+
     // closing the file
     fclose(fpointer);
 }
@@ -422,7 +334,7 @@ char Identification(char Master_Password[SIZE])
             *p = '\0';
         }
 
-        //In case of existing user
+        // In case of existing user
 
         // comparing the username with the get_line, if the get_line==Username then access granted
         if ((strcmp(get_line, UserName) == 0))
@@ -436,6 +348,7 @@ char Identification(char Master_Password[SIZE])
                 }
                 if ((strcmp(get_line, Master_Password) == 0))
                 {
+                    status = 0;
                     return '0';
                 }
                 else if ((strcmp(get_line, Master_Password) != 0))
@@ -537,7 +450,7 @@ char inVault()
         break; // mainchoice case 1 break
 
     case 2:
-
+        // for secure notes
         break;
     }
 }
@@ -548,6 +461,9 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE])
     char *extension = ".txt";
     char fileName[strlen(UserName) + strlen(extension) + 1];           // added 1 for the '/0' character
     snprintf(fileName, sizeof(fileName), "%s%s", UserName, extension); // here taking UserName and extension strings ( concatenating them ) and then storing into fileName.
+
+    time_t currentTime;
+    time(&currentTime);
 
     FILE *fPtr;
     fPtr = fopen(fileName, "a");
@@ -565,6 +481,8 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE])
     fprintf(fPtr, "The UserName is:\t%s", userName);
     fprintf(fPtr, "\n");
     fprintf(fPtr, "The password is:\t%s", pass);
+    fprintf(fPtr, "\n");
+    fprintf(fPtr, "Date and time this record was added: %s", ctime(&currentTime));
     fprintf(fPtr, "\n");
     fprintf(fPtr, "_");
     fclose(fPtr);
@@ -874,4 +792,291 @@ int resetPassword()
     fclose(tempFile);
     printf("\nPassword Changed Successfully");
     remove("temp.txt");
+}
+
+void signUpScreen()
+{
+
+    int test, ch, n = 0, i = 0, password_choice = 0, q = 0, Dots = 0;
+    char Master_Password[SIZE], Re_Master_Password[SIZE];
+    char questionn[SIZE];
+
+    i = 0; // clearing i
+
+    system("cls"); //for clearing the output screen
+    separators();
+    printf("\n\n\tCreate a new vault here\n\n");
+    separators();
+    printf("\nEnter the Username: ");
+    scanf("%s", &UserName);
+    // do starts
+    printf("Press 1 if you want to Hide the password\nPress 2 if you want to display the password\n");
+    scanf("%d", &password_choice);
+
+    do
+    {
+
+        if (password_choice == 1)
+        {
+            // for Master Password
+            i = 0;
+            printf("Please Enter your Master Password: ");
+            while ((ch = getch()) != 13)
+            {
+                if (ch == 8)
+                {
+                    i--;
+                    putch('\b');
+                    printf(" ");
+                    putch('\b');
+                }
+                if (ch != 8)
+                {
+                    Master_Password[i] = ch;
+                    putch('*');
+                    i++;
+                }
+            }
+            Master_Password[i] = '\0';
+
+            // to show the password
+            printf("\n\nDo you want to show the Master password now: 1 for yes/2 for no? ");
+            printf("Your reply: ");
+            scanf("%d", &n);
+            if (n == 1)
+            {
+                printf("\n%s", Master_Password);
+            }
+
+            // for re-enter master_password
+            i = 0;
+            printf("\nRe-Enter the Master Password: ");
+            while ((ch = getch()) != 13)
+            {
+                if (ch == 8)
+                {
+                    i--;
+                    putch('\b');
+                    printf(" ");
+                    putch('\b');
+                }
+                if (ch != 8)
+                {
+                    Re_Master_Password[i] = ch;
+                    putch('*');
+                    i++;
+                }
+            }
+            Re_Master_Password[i] = '\0';
+
+            // to show the password
+            printf("\n\nDo you want to show the Re-Entered Master password now: 1 for yes/2 for no? ");
+            printf("Your reply: ");
+            scanf("%d", &n);
+            if (n == 1)
+            {
+                printf("\n%s", Re_Master_Password);
+            }
+        }
+
+        if (password_choice == 2)
+        {
+
+            printf("\nEnter the new Password: ");
+            scanf("%s", &Master_Password);
+            printf("\nRe-Enter the new Password: ");
+            scanf("%s", &Re_Master_Password);
+        }
+        if (strcmp(Master_Password, Re_Master_Password) != 0)
+        {
+            printf("\n\nRe-Entered password could not match, Please Enter Again.\n");
+        }
+    } while (strcmp(Master_Password, Re_Master_Password) != 0 && strlen(Master_Password) < 8);
+
+    AlreadyExistsUser();
+
+    if (AlreadyExistsUser() == '0')
+    {
+        main();
+    }
+
+    test = question();
+
+    switch (test)
+    {
+    case 1:
+        printf("The question you chose is:\nWhat was the name of your first school?");
+        printf("\nEnter the answer of the question:\t");
+        scanf("%s", questionn);
+        q = 1;
+        break;
+
+    case 2:
+        printf("The question you chose is:\nIn which city were you born?");
+        printf("\nEnter the answer of the question:\t");
+        scanf("%s", questionn);
+        q = 2;
+        break;
+
+    case 3:
+        printf("The question you chose is:\nWhat was your childhood nickname?");
+        printf("\nEnter the answer of the question:\t");
+        scanf("%s", questionn);
+        q = 3;
+        break;
+
+    case 4:
+        printf("The question you chose is:\nWhat was the name of the first college you attended?");
+        printf("\nEnter the answer of the question:\t");
+        scanf("%s", questionn);
+        q = 4;
+        break;
+    }
+
+    printf("\nUser Created Successfully. You may logIn to your Vault Now.\n");
+    printf("\nRe-directing to the Main-menu.\n");
+    // loading
+    Dots = 0;
+    while (Dots != 4)
+    {
+        Sleep(1000);
+        Dots += 1;
+        printf(".");
+    }
+
+    signup(Master_Password, questionn, q);
+}
+
+int checkAttempts(int attempts)
+{
+
+    FILE *tempPtr;
+
+    int totalAttempts = 0, uAttempts = 0;
+
+    tempPtr = fopen("userStatus.txt", "a");
+
+    printf("\nYou have %d attempts left before your vault gets locked and you'll have to recover your master password", 5 - attempts);
+
+    if (attempts == 5)
+    {
+        system("cls");
+        printf("\nERROR. Maximum number of attempts reached! Your vault has been locked!");
+        fprintf(tempPtr, "%s", UserName);
+        fprintf(tempPtr, "\n");
+        exit(0);
+    }
+}
+
+int checkVaultStatus()
+{
+    FILE *fPtr, *fPtrN, *tfPtrN;
+    char getLine[SIZE], currentLine[SIZE];
+    char *p, *d;
+    int check = 0;
+    int choice = 0, Dots = 0;
+
+    fPtr = fopen("userStatus.txt", "r");
+
+    while (fgets(getLine, sizeof(getLine), fPtr))
+    {
+
+        if ((p = strchr(getLine, '\n')) != NULL)
+        {
+            *p = '\0';
+            check++;
+        }
+
+        if ((strcmp(getLine, UserName) == 0))
+        {
+            printf("\nYour Vault is Disabled!");
+            printf("\nYou need to recover your master password");
+            do
+            {
+                printf("\nEnter 1 for resetting master password OR");
+                printf("\nEnter 2 for going back to main menu   OR");
+                printf("\nEnter 3 for exiting the program");
+                printf("\nEnter your choice: ");
+                scanf("%d", &choice);
+
+                switch (choice)
+                {
+                case 1:
+                    forgotPassword();
+                    fPtrN = fopen("userStatus.txt", "r");
+                    tfPtrN = fopen("temp1", "w");
+
+                    while (fgets(currentLine, sizeof(currentLine), fPtrN))
+                    {
+
+                        if ((d = strchr(currentLine, '\n')) != NULL)
+                        {
+                            *d = '\0';
+                            check++;
+                        }
+
+                        if (strcmp(currentLine, UserName) == 0)
+                        {
+                            fprintf(tfPtrN, "\n");
+                            // fprintf(tfPtrN, "\n");
+                        }
+                        else
+                        {
+                            fprintf(tfPtrN, "%s", currentLine);
+                            fprintf(tfPtrN, "\n");
+                        }
+                    }
+
+                    fclose(fPtrN);
+                    fclose(tfPtrN);
+
+                    tfPtrN = fopen("temp1", "r");
+                    fPtrN = fopen("userStatus.txt", "w");
+
+                    while (fgets(currentLine, sizeof(currentLine), tfPtrN))
+                    {
+
+                        if ((d = strchr(currentLine, '\n')) != NULL)
+                        {
+                            *d = '\0';
+                        }
+
+                        fprintf(fPtrN, "%s", currentLine);
+                        fprintf(fPtrN, "\n");
+                    }
+
+                    fclose(fPtrN);
+                    fclose(tfPtrN);
+                    remove("temp1.txt");
+
+                    printf("\nVault un-blocked successfully. You may login to your vault now.");
+                    printf("\n");
+                    printf("\nRe-directing to the login page\n");
+                    while (Dots != 5)
+                    {
+                        Sleep(1000);
+                        Dots += 1;
+                        printf(".");
+                    }
+                    return 10;
+
+                    break;
+
+                case 2:
+                    main();
+                    break;
+
+                case 3:
+                    exit(0);
+                    break;
+
+                default:
+                    printf("\nError! Invalid Choice. Enter Again");
+                }
+
+            } while (choice != 1 && choice != 2);
+        }
+    }
+
+    fclose(fPtr);
 }
