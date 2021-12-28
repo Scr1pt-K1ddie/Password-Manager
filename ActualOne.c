@@ -7,6 +7,8 @@
 
 #define SIZE 255
 
+void Generate_password(char *PTR);
+void Make_lower(char *Search1);
 void appendSecureNotes();
 void checkSecureNotes();
 void SecureNotes();
@@ -375,6 +377,7 @@ char inVault()
 {
 
     int mainChoice, test, newChoice;
+    char random_pass;
     char web[SIZE], username[SIZE], pass[SIZE];
     int log_out = 0;
     char anotherTest;
@@ -461,8 +464,17 @@ char inVault()
             scanf("%s", &web);
             printf("\n\nEnter the UserName: ");
             scanf("%s", &username);
-            printf("\n\nEnter the Password: ");
-            scanf("%s", &pass);
+            printf("\nDo you want to generate a random password? ");
+            printf("\nPress Y for Yes\nPress N for No");
+            random_pass=getch();
+            if(random_pass=='Y'||random_pass=='y')
+                {
+                    Generate_password(pass);
+                }
+            else
+            {printf("\n\nEnter the Password: ");
+            scanf("%s", &pass);}
+            Make_lower(web);
             save(web, username, pass);
 
             printf("\nEnter 0 to go back to main menu:\t");
@@ -569,9 +581,14 @@ char save(char website[SIZE], char userName[SIZE], char pass[SIZE])
 
 char view(void)
 {
+    system("cls");
+    printf("--------------------------------------");
+    printf("\n    CREDENTIALS VIEW MODE        \n");
+    printf("--------------------------------------");
     char search[SIZE];
     printf("\n\nEnter the website name you want to search: ");
     scanf("%s",search);
+    Make_lower(search);
     char currentLine[SIZE];
     FILE *filePointer;
     int check = 0;
@@ -1163,7 +1180,9 @@ void SecureNotes()
     int localCountingCharacter=0;
     char Paragraph[SIZE];
     system("cls");
-    printf("----------Secure Notes----------");
+    printf("--------------------------------------");
+    printf("\n    SECURENOTES CREATE MODE       \n");
+    printf("--------------------------------------");
     printf("\n");
     fflush(stdin);
     fgets(Paragraph,sizeof(Paragraph),stdin);
@@ -1196,6 +1215,10 @@ void SecureNotes()
 /*--------VIEW SECURENOTES-----------*/
 void viewSecureNotes()
 {
+    system("cls");
+    printf("--------------------------------------");
+    printf("\n    SECURENOTES VIEW MODE       \n");
+    printf("--------------------------------------\n");
     /*for storage file*/
     char *temp="TEMP.dat";
     char NAMEOFFILE[strlen(temp)+strlen(UserName)+1];
@@ -1305,6 +1328,10 @@ void checkSecureNotes()
 /*------APPEND SECURENOTES---------*/
 void appendSecureNotes()
 {
+    system("cls");
+    printf("--------------------------------------");
+    printf("\n    SECURENOTES APPEND MODE       \n");
+    printf("--------------------------------------");
     /*for storage file*/
     char *temp="TEMP.dat";
     char NAMEOFFILE[strlen(temp)+strlen(UserName)+1];
@@ -1386,4 +1413,42 @@ void appendSecureNotes()
         Storage=fopen(NAMEOFFILE,"a");
         fprintf(Storage,"1");
         fclose(Storage);
+}
+/*------make_lowercase function*/
+void Make_lower(char *Search1)
+{
+    int i;
+    int length= strlen(Search1);
+    for(i=0;i<length;i++)
+        {
+            Search1[i]=tolower(Search1[i]);
+        }
+}
+/*-------PASS-GEN-LOGIC--------*/
+void Generate_password(char *PTR)
+{
+    system("cls");
+    char condition_check='n';
+    do{
+            system("cls");
+
+    int length_Password,i;
+    printf("\n\nEnter the length of the password: ");
+    scanf("%d",&length_Password);
+    srand(time(NULL));
+    char Characters[SIZE]="QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890!@#$%^&*";
+    for(i=0;i<length_Password;i++)
+        {
+            PTR[i]=Characters[rand()%strlen(Characters)];
+        }
+        PTR[i]='\0';
+    printf("\n%s",PTR);
+    printf("\nDo you want to generate any other password?");
+    printf("\nPress Y for Yes\nPress N for No");
+    condition_check=getch();
+
+    }while(condition_check == 'y' || condition_check=='Y');
+    printf("\n%s is your Randomly Generated Password now.",PTR);
+    printf("\nPress Enter to continue");
+    getch();
 }
